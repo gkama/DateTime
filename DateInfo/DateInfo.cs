@@ -14,6 +14,9 @@ namespace DateInfo
     {
         public string input { get; set; }
         public ILambdaContext context { get; set; }
+        public int yearInt { get; set; }
+        public int monthInt { get; set; }
+        public int dayInt { get; set; }
         public DateInfo(string input, ILambdaContext context)
         {
             this.input = input;
@@ -30,7 +33,9 @@ namespace DateInfo
                                             "yyyyMMdd",
                                             CultureInfo.InvariantCulture,
                                             DateTimeStyles.None);
-
+                this.yearInt = inputDateTime.Year;
+                this.monthInt = inputDateTime.Month;
+                this.dayInt = inputDateTime.Day;
                 //Date formatted to be JSON serialized and returned
                 //Day format
                 ///
@@ -133,6 +138,13 @@ namespace DateInfo
             public string mm;
             public string mmm;
             public string mmmm;
+        }
+
+        public class trivia
+        {
+            public string year_trivia;
+            public string day_trivia;
+            public string month_trivia;
         }
     }
 }
