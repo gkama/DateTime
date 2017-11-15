@@ -17,6 +17,8 @@ namespace DateInfo
         public int yearInt { get; set; }
         public int monthInt { get; set; }
         public int dayInt { get; set; }
+        public int dayOfYear { get; set; }
+
         public DateInfo(string input, ILambdaContext context)
         {
             this.input = input;
@@ -24,7 +26,7 @@ namespace DateInfo
         }
 
         //Get the info
-        public string getDateInfo()
+        public async Task<string> getDateInfo()
         {
             //try-catch Makes sure it's exact format
             try
@@ -36,6 +38,7 @@ namespace DateInfo
                 this.yearInt = inputDateTime.Year;
                 this.monthInt = inputDateTime.Month;
                 this.dayInt = inputDateTime.Day;
+                this.dayOfYear = inputDateTime.DayOfYear;
                 //Date formatted to be JSON serialized and returned
                 //Day format
                 ///
@@ -77,6 +80,24 @@ namespace DateInfo
                     yyyy_MM_dd = inputDateTime.ToString("yyyy-MM-dd"),
                     yyyy_MM = inputDateTime.ToString("yyyy-MM")
                 };
+
+                //Trivia
+                TriviaInfo tr_info = new TriviaInfo(this.yearInt, this.monthInt, this.dayInt, this.dayOfYear);
+                Task<string> getYearTrivia = tr_info.GetTrivia("year");
+                Task<string> getDateTrivia = tr_info.GetTrivia("date");
+                Task<string> getMonthTrivia = tr_info.GetTrivia("month");
+                Task<string> getDayTrivia = tr_info.GetTrivia("day");
+                Task<string> getdayOfYearTrivia = tr_info.GetTrivia("dayOfYear");
+                trivia tr = new trivia()
+                {
+                    year = await getYearTrivia,
+                    date = await getDateTrivia,
+                    month = await getMonthTrivia,
+                    day = await getDayTrivia,
+                    dayOfYear = await getdayOfYearTrivia
+                };
+
+                //Final json
                 DateFormat dt = new DateFormat()
                 {
                     en = inputDateTime.ToString("MMMM %d, yyyy"),
@@ -88,7 +109,8 @@ namespace DateInfo
                     timezone = inputDateTime.ToString("%K"),
                     day = d,
                     month = M,
-                    formats = f
+                    formats = f,
+                    trivia = tr
                 };
 
                 //Serialized return
@@ -116,6 +138,7 @@ namespace DateInfo
             public day day;
             public month month;
             public formats formats;
+            public trivia trivia;
 
         }
         public class formats
@@ -142,9 +165,11 @@ namespace DateInfo
 
         public class trivia
         {
-            public string year_trivia;
-            public string day_trivia;
-            public string month_trivia;
+            public string year;
+            public string date;
+            public string day;
+            public string dayOfYear;
+            public string month;
         }
     }
 }

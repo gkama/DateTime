@@ -20,7 +20,7 @@ namespace DateInfo
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public APIGatewayProxyResponse FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
+        public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace DateInfo
                 var response = new APIGatewayProxyResponse
                 {
                     StatusCode = (int)HttpStatusCode.OK,
-                    Body = di.getDateInfo(),
+                    Body = await di.getDateInfo(),
                     Headers = new Dictionary<string, string> { { "Content-Type", "application/json" }, { "Access-Control-Allow-Origin", "*" } }
                 };
 
@@ -42,7 +42,8 @@ namespace DateInfo
                 var response = new APIGatewayProxyResponse
                 {
                     StatusCode = (int)HttpStatusCode.BadRequest,
-                    Body = string.Format("Error getting date info. Correct date format is: yyyyMMdd (20170101 for example).{0}Error Message: {1}", Environment.NewLine, e.Message),
+                    Body = string.Format("Error getting date info. Correct date format is: yyyyMMdd ({0} for example).{1}Error Message: {2}", 
+                           DateTime.Now.ToString("yyyyMMdd"), Environment.NewLine, e.Message),
                     Headers = new Dictionary<string, string> { { "Content-Type", "application/json" }, { "Access-Control-Allow-Origin", "*" } }
                 };
 
